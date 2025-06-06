@@ -1,0 +1,44 @@
+const express = require('express');
+const PDFDocument = require('pdfkit');
+const Complaint = require('../models/Complaint'); // adjust this path based on your project structure
+
+const router = express.Router();
+
+// GET /api/complaints/pdf - Export complaints as PDF
+router.get('/complaints/pdf', async (req, res) => {
+try {
+const complaints = await Complaint.find(); // Add filters here if needed
+// Create a new PDF document
+const doc = new PDFDocument();
+
+// Set the response headers
+res.setHeader('Content-Type', 'application/pdf');
+res.setHeader('Content-Disposition', 'attachment; filename=complaints.pdf');
+
+// Pipe the PDF into the response
+doc.pipe(res);
+
+// PDF Title
+doc.fontSize(20).text('Complaints Report', { align: 'center' });
+doc.moveDown();
+
+// Loop through complaints and add to PDF
+complaints.forEach((complaint, index) => {
+  doc
+    .fontSize(12)
+    .text(`${index + 1}. Title: ${complaint.title || 'N/A'}`)
+    .text(`   Description: ${complaint.description || 'N/A'}`)
+    .text(`   Status: ${complaint.status || 'N/A'}`)
+    .text(`   Created At: ${new Date(complaint.createdAt).toLocaleString()}`)
+    .moveDown();
+});
+
+// End the PDF document
+doc.end();
+} catch (err) {
+console.error('PDF generation error:', err);
+res.status(500).json({ message: 'Failed to generate PDF' });
+}
+});
+
+module.exports = router;
