@@ -6,12 +6,13 @@ import { useSelector } from 'react-redux';
 
 const AdminSidebar = () => {
   const navigate = useNavigate();
-  const { loading, user: loginUser, isLoggedIn:isLoggedInAdmin, error } = useSelector((state) => state.loginAdmin || {});
-  useEffect(()=>{
-    if(!isLoggedInAdmin){
-      navigate('/')
-    }
-  },[isLoggedInAdmin])
+  const { loading, user: loginUser, isLoggedIn:isLoggedInAdmin, error } = useSelector((state) => state.login || {});
+  // Remove automatic redirect - ProtectedRoute handles this now
+  // useEffect(()=>{
+  //   if(!isLoggedInAdmin){
+  //     navigate('/')
+  //   }
+  // },[isLoggedInAdmin])
 
   return (
     <Box

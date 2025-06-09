@@ -43,6 +43,7 @@ const ArriveComplaints = () => {
                 <Th>Complaint Text</Th>
                 <Th>Mobile No</Th>
                 <Th>Location</Th>
+                <Th>sublocation</Th>
                 <Th>Status</Th>
                 <Th>Actions</Th>
               </Tr>
@@ -55,6 +56,7 @@ const ArriveComplaints = () => {
                   <Td maxW="150px" isTruncated>{complaint.complain_details}</Td>
                   <Td>{complaint.employee_phoneNo}</Td>
                   <Td>{complaint.employee_location}</Td>
+                   <Td>{complaint.employee_sublocation}</Td>
                   <Td>
                   <Tag colorScheme={getStatusColor(complaint.status)}>
                     {complaint.status}

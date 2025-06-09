@@ -1,6 +1,5 @@
 import React from 'react';
 import { Container, Box, Text, Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react';
-import LoginAdmin from './LoginAdmin';
 import RegisterEmployee from './RegisterEmployee';
 import LoginEmployee from './LoginEmployee';
 

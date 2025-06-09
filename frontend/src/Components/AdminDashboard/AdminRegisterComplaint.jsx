@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Heading, FormControl, FormLabel, Input, RadioGroup, Radio, Select, Textarea, Button, VStack, useToast } from '@chakra-ui/react';
+import {
+  Box, Heading, FormControl, FormLabel, Input, RadioGroup, Radio, Select,
+  Textarea, Button, VStack, useToast
+} from '@chakra-ui/react';
 import { useDispatch, useSelector } from 'react-redux';
 import { registerComplaint } from '../../Redux/Actions/ComplaintAction';
 import { useNavigate } from 'react-router-dom';
@@ -11,22 +14,28 @@ const AdminRegisterComplaint = () => {
   const dispatch = useDispatch();
 
   const [employee_location, setEmployee_location] = useState("");
+  const [employee_sublocation, setEmployee_sublocation] = useState("");
   const [complaint_asset, setComplaint_asset] = useState("");
+  const [customAsset, setCustomAsset] = useState("");
   const [employee_phoneNo, setEmployee_phoneNo] = useState("");
   const [complain_details, setComplain_details] = useState("");
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    if (!employee_location || !complaint_asset || !complain_details || !employee_phoneNo) {
+
+    const assetToSend = complaint_asset === "Other" ? customAsset : complaint_asset;
+
+    if (!employee_location || !employee_sublocation || !assetToSend || !complain_details || !employee_phoneNo) {
       toast({
         title: 'Please fill all the details',
         status: 'error',
         duration: 9000,
         isClosable: true,
       });
-      return; // Prevent form submission if validation fails
+      return;
     }
-    dispatch(registerComplaint(employee_location, complaint_asset, employee_phoneNo, complain_details));
+
+    dispatch(registerComplaint(employee_location, employee_sublocation, assetToSend, employee_phoneNo, complain_details));
   };
 
   const { loading: isComplaintLoading, isRegisteredComplaint } = useSelector((state) => state.registerComplaint);
@@ -43,6 +52,9 @@ const AdminRegisterComplaint = () => {
       setComplain_details("");
       setEmployee_phoneNo("");
       setComplaint_asset("");
+      setCustomAsset("");
+      setEmployee_location("");
+      setEmployee_sublocation("");
       dispatch({ type: REGISTER_COMPLAINT_RESET });
       navigate('/admin/status/new-complaints');
     }
@@ -59,6 +71,8 @@ const AdminRegisterComplaint = () => {
       mx="auto"
       mt={1}
       mb={10}
+      maxH="90vh"
+      overflowY="auto"
     >
       <Heading as="h1" size="xl" mb={6} textAlign="center" color="teal.500">
         Register a Complaint
@@ -69,7 +83,10 @@ const AdminRegisterComplaint = () => {
             <FormLabel>Employee Location</FormLabel>
             <RadioGroup
               value={employee_location}
-              onChange={(value) => setEmployee_location(value)}
+              onChange={(value) => {
+                setEmployee_location(value);
+                setEmployee_sublocation("");
+              }}
               defaultValue="Tehri"
             >
               <VStack align="start">
@@ -79,25 +96,67 @@ const AdminRegisterComplaint = () => {
             </RadioGroup>
           </FormControl>
 
+          {employee_location === "Tehri" && (
+            <FormControl isRequired>
+              <FormLabel>Select Sub-Location</FormLabel>
+              <RadioGroup
+                value={employee_sublocation}
+                onChange={(value) => setEmployee_sublocation(value)}
+              >
+                <VStack align="start">
+                  <Radio value="Koti">Koti</Radio>
+                  <Radio value="Bhagirathipuram">Bhagirathipuram</Radio>
+                  <Radio value="New Tehri">New Tehri</Radio>
+                </VStack>
+              </RadioGroup>
+            </FormControl>
+          )}
+
+          {employee_location === "Koteshwar" && (
+            <FormControl isRequired>
+              <FormLabel>Select Sub-Location</FormLabel>
+              <RadioGroup
+                value={employee_sublocation}
+                onChange={(value) => setEmployee_sublocation(value)}
+              >
+                <VStack align="start">
+                  <Radio value="Power House">Power House</Radio>
+                  <Radio value="Admin Block">Admin Block</Radio>
+                  <Radio value="Water Sports Academy">Water Sports Academy</Radio>
+                </VStack>
+              </RadioGroup>
+            </FormControl>
+          )}
+
           <FormControl isRequired>
             <FormLabel>Asset</FormLabel>
             <Select
               value={complaint_asset}
-              onChange={(e) => setComplaint_asset(e.target.value)} // Correctly access value
+              onChange={(e) => setComplaint_asset(e.target.value)}
               placeholder="Select asset"
             >
               <option value="THDC Desktop">THDC Desktop</option>
               <option value="THDC UPS">THDC UPS</option>
               <option value="THDC Printer">THDC Printer</option>
               <option value="THDC Scanner">THDC Scanner</option>
+              <option value="Other">Other</option>
             </Select>
+
+            {complaint_asset === "Other" && (
+              <Input
+                mt={2}
+                placeholder="Enter custom asset"
+                value={customAsset}
+                onChange={(e) => setCustomAsset(e.target.value)}
+              />
+            )}
           </FormControl>
 
           <FormControl isRequired>
             <FormLabel>Mobile Number</FormLabel>
             <Input
               value={employee_phoneNo}
-              onChange={(e) => setEmployee_phoneNo(e.target.value.replace(/\D/g, ''))} //Allow only 10 digits
+              onChange={(e) => setEmployee_phoneNo(e.target.value.replace(/\D/g, ''))}
               type="tel"
               placeholder="Enter your mobile number"
               maxLength="10"
@@ -111,7 +170,7 @@ const AdminRegisterComplaint = () => {
               value={complain_details}
               onChange={(e) => setComplain_details(e.target.value)}
               placeholder="Describe your complaint in detail"
-              minH="100px" // Increase height for more space
+              minH="100px"
             />
           </FormControl>
 
@@ -122,7 +181,6 @@ const AdminRegisterComplaint = () => {
             size="lg"
             width="full"
             mt={3}
-            //top="50px"
           >
             Submit
           </Button>
@@ -133,4 +191,3 @@ const AdminRegisterComplaint = () => {
 };
 
 export default AdminRegisterComplaint;
-

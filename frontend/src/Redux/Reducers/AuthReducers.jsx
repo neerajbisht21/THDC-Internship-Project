@@ -140,6 +140,8 @@ export const logOutReducer = (state={
                 error:[]
             }
         case LOGOUT_USER_SUCCESS:
+            // Clear localStorage on logout
+            localStorage.removeItem("user");
             return {
                 ...state,
                 loading: false,
@@ -193,6 +195,7 @@ export const loginReducer = (
         user: payload,
         isLoggedIn: true,
         success: true,
+        error: null,
       };
 
     case LOGIN_FAIL:

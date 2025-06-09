@@ -12,10 +12,10 @@ import AdminNewComplaints from "./Components/AdminDashboard/AdminNewComplaints";
 import AdminPendingComplaints from "./Components/AdminDashboard/AdminPendingComplaints";
 import AdminCompleteComplaints from "./Components/AdminDashboard/AdminCompleteComplaints";
 import AdminLayout from "./Components/AdminDashboard/AdminLayout";
-import LoginAdmin from "./Components/Screen/Auth/LoginAdmin";
 import AdminStats from "./Components/AdminDashboard/AdminStats";
 import FilterComplaint from "./Components/AdminDashboard/FilterComplaint";
 import EmployeeStats from "./Components/EmployeeDashboard/EmployeeStats";
+import ProtectedRoute from "./Components/Screen/Auth/ProtectedRoute";
 import backgroundImage from "./assets/background.jpg";
 
 function App() {
@@ -56,24 +56,27 @@ function App() {
         <Routes>
           <Route path="/authEmployee" element={<AuthMainScreen />} />
           <Route path="/" element={<AuthScreen />} />
-          <Route path="/authEmployee" element={<LoginAdmin />} />
 
-          <Route path="/employee" element={<EmployeeLayout />}>
-            <Route path="" element={<EmployeeStats />} />
-            <Route path="register-complaint" element={<RegisterComplaint />} />
-            <Route path="status/all-complaints" element={<AllComplaints />} />
-            <Route path="status/open-complaints" element={<OpenComplaints />} />
-            <Route path="status/closed-complaints" element={<ClosedComplaints />} />
-            <Route path="arrive-complaints" element={<ArriveComplaints />} />
+          <Route element={<ProtectedRoute allowedRoles={['employee']} />}>
+            <Route path="/employee" element={<EmployeeLayout />}>
+              <Route path="" element={<EmployeeStats />} />
+              <Route path="register-complaint" element={<RegisterComplaint />} />
+              <Route path="status/all-complaints" element={<AllComplaints />} />
+              <Route path="status/open-complaints" element={<OpenComplaints />} />
+              <Route path="status/closed-complaints" element={<ClosedComplaints />} />
+              <Route path="arrive-complaints" element={<ArriveComplaints />} />
+            </Route>
           </Route>
 
-          <Route path="/admin" element={<AdminLayout />}>
-            <Route path="" element={<AdminStats />} />
-            <Route path="filterComplaints" element={<FilterComplaint />} />
-            <Route path="register-complaint" element={<AdminRegisterComplaint />} />
-            <Route path="status/new-complaints" element={<AdminNewComplaints />} />
-            <Route path="status/open-complaints" element={<AdminPendingComplaints />} />
-            <Route path="status/closed-complaints" element={<AdminCompleteComplaints />} />
+          <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route path="" element={<AdminStats />} />
+              <Route path="filterComplaints" element={<FilterComplaint />} />
+              <Route path="register-complaint" element={<AdminRegisterComplaint />} />
+              <Route path="status/new-complaints" element={<AdminNewComplaints />} />
+              <Route path="status/open-complaints" element={<AdminPendingComplaints />} />
+              <Route path="status/closed-complaints" element={<AdminCompleteComplaints />} />
+            </Route>
           </Route>
         </Routes>
       </div>

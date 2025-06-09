@@ -22,7 +22,7 @@ const AdminStats = () => {
 
 
     // logout User:-
-    const { loading, user: lu, isLoggedIn, error } = useSelector((state) => state.loginAdmin || {});
+    const { loading, user: lu, isLoggedIn, error } = useSelector((state) => state.login || {});
 
     const toast = useToast()
     const dispatch = useDispatch();

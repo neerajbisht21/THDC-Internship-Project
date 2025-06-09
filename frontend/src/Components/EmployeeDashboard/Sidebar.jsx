@@ -31,7 +31,7 @@ const Sidebar = () => {
     user: lu,
     isLoggedIn,
     error,
-  } = useSelector((state) => state.loginUser || {});
+  } = useSelector((state) => state.login);
   useEffect(() => {
     if (!isLoggedIn) {
       navigate("/");
@@ -40,25 +40,21 @@ const Sidebar = () => {
 
   return (
     <Box
-      w="250px"
-      p={9}
-      bg="blue.100"
+      w="300px"
+      p={5}
+      bg="gray.100"
       h="100vh"
-      borderRadius= "10px"
+      boxShadow="md"
       fontFamily="'Nunito', sans-serif"
-      
     >
       <Flex align="center" mb={6} direction="column">
         <Avatar name={lu ? lu.employee_name : ""} src="/assets/profile.png" size="xl" mb={4} />
         <Text fontSize="lg" fontWeight="bold">
-         User name : {lu && lu.employee_name}
-        </Text>
-        <Text fontSize="xs">
-                Department :  { lu?.employee_department}
+          {lu && lu.employee_name}
         </Text>
       </Flex>
-      <Divider borderColor="red" mb={9} />
-      <VStack align="start" spacing={7}>
+      <Divider borderColor="gray.300" mb={4} />
+      <VStack align="start" spacing={4}>
       <Link
           as={RouterLink}
           to=""
@@ -109,7 +105,7 @@ const Sidebar = () => {
           _hover={{ bg: "gray.200" }}
         >
           <Icon as={FaArrowRight} mr={3} />
-          Active Complaints
+          Open Complaints
         </Link>
         <Link
           as={RouterLink}
@@ -135,7 +131,7 @@ const Sidebar = () => {
           _hover={{ bg: "gray.200" }}
         >
           <Icon as={FaCheckCircle} mr={3} />
-          Issued Complaints
+          Arrive Complaints
         </Link>
       </VStack>
     </Box>

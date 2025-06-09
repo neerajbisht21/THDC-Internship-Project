@@ -24,9 +24,28 @@ const rootReducer = {
   changeStatus: changeStatusComplaintReducer,
   filterComplaints: filterComplaintReducer
 }
-const preloadedState = {
-  // optional initial state
-}
+// Restore authentication state from localStorage
+const getPreloadedState = () => {
+  try {
+    const user = localStorage.getItem('user');
+    if (user) {
+      return {
+        login: {
+          loading: false,
+          user: JSON.parse(user),
+          success: true,
+          isLoggedIn: true,
+          error: null
+        }
+      };
+    }
+  } catch (error) {
+    console.error('Failed to restore state from localStorage:', error);
+  }
+  return {};
+};
+
+const preloadedState = getPreloadedState();
 
 const store = configureStore({
   reducer: rootReducer,

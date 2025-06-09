@@ -138,19 +138,6 @@ const { loading, user, isLoggedIn, error } = useSelector((state) => state.login 
             Login
           </Heading>
 
-          <FormControl id="role" isRequired>
-            <FormLabel>Login As</FormLabel>
-            <Select
-              bg="white"
-              color="black"
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-            >
-              <option value="employee">Employee</option>
-              <option value="admin">Admin</option>
-            </Select>
-          </FormControl>
-
           <FormControl id="employee_id" isRequired>
             <FormLabel>User Id</FormLabel>
             <Input

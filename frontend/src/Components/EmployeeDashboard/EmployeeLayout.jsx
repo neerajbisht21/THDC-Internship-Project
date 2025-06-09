@@ -7,7 +7,7 @@ const EmployeeLayout = () => {
   return (
     <Flex>
       <Sidebar />
-      <Box flex="1" p={5} bg="" h="100vh">
+      <Box flex="1" p={5} bg="gray.50" h="100vh">
         <Outlet />
       </Box>
     </Flex>

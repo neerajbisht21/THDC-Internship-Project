@@ -7,6 +7,10 @@ const ComplaintSchema = new Schema({
         type: String,
         required: [true, "Please enter your Location"]
     },
+     employee_sublocation: {
+        type: String,
+        required: [true, "Please enter your SubLocation"]
+    },
     complaint_asset: {
         type: String,
         required: [true, "Please enter your Asset"]

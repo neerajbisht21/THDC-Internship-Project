@@ -7,13 +7,13 @@ import { ASSIGN_COMPLAINT_TO_WORKERS_FAIL, ASSIGN_COMPLAINT_TO_WORKERS_REQUEST, 
 
 
 //Register a complaint:-
-export const registerComplaint = (employee_location, complaint_asset , employee_phoneNo ,complain_details) => async(dispatch) =>{
+export const registerComplaint = (employee_location, employee_sublocation, complaint_asset , employee_phoneNo ,complain_details) => async(dispatch) =>{
     try{
         dispatch({
             type: REGISTER_COMPLAINT_REQUEST
         })
         const config = { headers: { "Content-type": "application/json" } }
-        const { data } = await axios.post("/api/v1/registerComplaint", { employee_location, complaint_asset , employee_phoneNo ,complain_details}, config)
+        const { data } = await axios.post("/api/v1/registerComplaint", { employee_location, employee_sublocation, complaint_asset , employee_phoneNo ,complain_details}, config)
         dispatch({
             type: REGISTER_COMPLAINT_SUCCESS,
             payload: data.compaint

@@ -120,6 +120,10 @@ const ComplaintDetailModal = ({ isOpen, onClose, complaint }) => {
               <Text mt={1} bg="white" p={2} borderRadius="md" borderWidth="1px">{complaint.employee_location}</Text>
             </Box>
             <Box mb={4}>
+              <Text fontWeight="bold">sublocation:</Text>
+              <Text mt={1} bg="white" p={2} borderRadius="md" borderWidth="1px">{complaint.employee_sublocation}</Text>
+            </Box>
+            <Box mb={4}>
               <Text fontWeight="bold">Date of Submission:</Text>
               <Text mt={1} bg="white" p={2} borderRadius="md" borderWidth="1px">{formatDate(complaint.created_date)}</Text>
             </Box>
