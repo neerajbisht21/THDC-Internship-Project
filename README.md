@@ -103,7 +103,6 @@ The project is structured as follows:
 
 --------------
 
-[Insert screenshots of the application's UI]
 
 **Author**
 --------
