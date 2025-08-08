@@ -86,11 +86,10 @@ The project is structured as follows:
 ![Dashboard](assets/Screenshot%202025-05-29%20142146.png)
 
 ### Complaint Form
-![Complaint Form](assets/Screenshot%202025-05-29%20144153.png)
+![Complaint Form](assets/Screenshot%202025-05-29%20140443.png)
 
 ### Complaint List
 ![Complaint List](assets/Screenshot%202025-05-29%20140632.png)
-
 
 ### Admin Panel
 ![Admin Panel](assets/Screenshot%202025-05-29%20143351.png)
