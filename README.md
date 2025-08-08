@@ -83,13 +83,14 @@ The project is structured as follows:
 ## 📸 Screenshots
 
 ### Dashboard View
-![Dashboard](assets/Screenshot%202025-05-29%20140632.png)
+![Dashboard](assets/Screenshot%202025-05-29%20142146.png)
 
 ### Complaint Form
-![Complaint Form](assets/Screenshot%202025-05-29%20141503.png)
+![Complaint Form](assets/Screenshot%202025-05-29%20144153.png)
 
 ### Complaint List
-![Complaint List](assets/Screenshot%202025-05-29%20142146.png)
+![Complaint List](assets/Screenshot%202025-05-29%20140632.png)
+
 
 ### Admin Panel
 ![Admin Panel](assets/Screenshot%202025-05-29%20143351.png)
@@ -98,7 +99,8 @@ The project is structured as follows:
 ![Employee Dashboard](assets/Screenshot%202025-05-29%20143830.png)
 
 ### Stats View
-![Stats View](assets/Screenshot%202025-05-29%20144153.png)
+![Stats View](assets/Screenshot%202025-05-29%20141503.png)
+
 
 --------------
 
