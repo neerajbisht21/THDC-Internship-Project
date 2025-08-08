@@ -94,8 +94,8 @@ The project is structured as follows:
 ### Admin Panel
 ![Admin Panel](assets/Screenshot%202025-05-29%20143351.png)
 
-### Employee Dashboard
-![Employee Dashboard](assets/Screenshot%202025-05-29%20143830.png)
+### Complaint Details
+![Complaint Details](assets/Screenshot%202025-05-29%20143830.png)
 
 ### Stats View
 ![Stats View](assets/Screenshot%202025-05-29%20141503.png)
