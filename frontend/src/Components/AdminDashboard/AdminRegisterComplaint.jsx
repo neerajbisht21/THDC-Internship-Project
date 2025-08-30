@@ -1,12 +1,24 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
-  Box, Heading, FormControl, FormLabel, Input, RadioGroup, Radio, Select,
-  Textarea, Button, VStack, useToast
-} from '@chakra-ui/react';
-import { useDispatch, useSelector } from 'react-redux';
-import { registerComplaint } from '../../Redux/Actions/ComplaintAction';
-import { useNavigate } from 'react-router-dom';
-import { REGISTER_COMPLAINT_RESET } from '../../Redux/ActionType';
+  Box,
+  Heading,
+  FormControl,
+  FormLabel,
+  Input,
+  RadioGroup,
+  Radio,
+  Select,
+  Textarea,
+  Button,
+  VStack,
+  HStack,
+  useToast,
+  Divider,
+} from "@chakra-ui/react";
+import { useDispatch, useSelector } from "react-redux";
+import { registerComplaint } from "../../Redux/Actions/ComplaintAction";
+import { useNavigate } from "react-router-dom";
+import { REGISTER_COMPLAINT_RESET } from "../../Redux/ActionType";
 
 const AdminRegisterComplaint = () => {
   const toast = useToast();
@@ -23,30 +35,49 @@ const AdminRegisterComplaint = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    const assetToSend = complaint_asset === "Other" ? customAsset : complaint_asset;
+    const assetToSend =
+      complaint_asset === "Other" ? customAsset : complaint_asset;
 
-    if (!employee_location || !employee_sublocation || !assetToSend || !complain_details || !employee_phoneNo) {
+    if (
+      !employee_location ||
+      !employee_sublocation ||
+      !assetToSend ||
+      !complain_details ||
+      !employee_phoneNo
+    ) {
       toast({
-        title: 'Please fill all the details',
-        status: 'error',
-        duration: 9000,
+        title: "Missing Information",
+        description: "Please fill all the details before submitting.",
+        status: "error",
+        duration: 5000,
         isClosable: true,
+        position: "top",
       });
       return;
     }
 
-    dispatch(registerComplaint(employee_location, employee_sublocation, assetToSend, employee_phoneNo, complain_details));
+    dispatch(
+      registerComplaint(
+        employee_location,
+        employee_sublocation,
+        assetToSend,
+        employee_phoneNo,
+        complain_details
+      )
+    );
   };
 
-  const { loading: isComplaintLoading, isRegisteredComplaint } = useSelector((state) => state.registerComplaint);
+  const { loading: isComplaintLoading, isRegisteredComplaint } = useSelector(
+    (state) => state.registerComplaint
+  );
 
   useEffect(() => {
     if (isRegisteredComplaint) {
       toast({
-        title: 'Complaint Registered Successfully',
-        status: 'success',
-        position: 'top-right',
-        duration: 9000,
+        title: "Complaint Registered Successfully",
+        status: "success",
+        position: "top-right",
+        duration: 5000,
         isClosable: true,
       });
       setComplain_details("");
@@ -56,7 +87,7 @@ const AdminRegisterComplaint = () => {
       setEmployee_location("");
       setEmployee_sublocation("");
       dispatch({ type: REGISTER_COMPLAINT_RESET });
-      navigate('/admin/status/new-complaints');
+      navigate("/admin/status/new-complaints");
     }
   }, [isRegisteredComplaint, dispatch, navigate, toast]);
 
@@ -64,76 +95,101 @@ const AdminRegisterComplaint = () => {
     <Box
       p={8}
       bg="white"
-      borderRadius="md"
-      boxShadow="md"
+      borderRadius="lg"
+      boxShadow="xl"
       fontFamily="'Nunito', sans-serif"
-      maxW="90%"
+      maxW="70%"
       mx="auto"
-      mt={1}
+      mt={5}
       mb={10}
-      maxH="90vh"
-      overflowY="auto"
+      h="auto"
     >
-      <Heading as="h1" size="xl" mb={6} textAlign="center" color="teal.500">
+      <Heading
+        as="h1"
+        size="xl"
+        mb={8}
+        textAlign="center"
+        color="teal.600"
+        fontWeight="extrabold"
+      >
         Register a Complaint
       </Heading>
       <form onSubmit={handleSubmit}>
-        <VStack spacing={6} align="stretch">
+        <VStack spacing={8} align="stretch">
+          {/* Location */}
           <FormControl isRequired>
-            <FormLabel>Employee Location</FormLabel>
+            <FormLabel fontWeight="bold">Employee Location</FormLabel>
             <RadioGroup
               value={employee_location}
               onChange={(value) => {
                 setEmployee_location(value);
                 setEmployee_sublocation("");
               }}
-              defaultValue="Tehri"
             >
-              <VStack align="start">
-                <Radio value="Tehri">Tehri</Radio>
-                <Radio value="Koteshwar">Koteshwar</Radio>
-              </VStack>
+              <HStack spacing={8}>
+                <Radio value="Tehri" colorScheme="teal">
+                  Tehri
+                </Radio>
+                <Radio value="Koteshwar" colorScheme="teal">
+                  Koteshwar
+                </Radio>
+              </HStack>
             </RadioGroup>
           </FormControl>
 
+          {/* Sub Location */}
           {employee_location === "Tehri" && (
             <FormControl isRequired>
-              <FormLabel>Select Sub-Location</FormLabel>
+              <FormLabel fontWeight="bold">Select Sub-Location</FormLabel>
               <RadioGroup
                 value={employee_sublocation}
                 onChange={(value) => setEmployee_sublocation(value)}
               >
-                <VStack align="start">
-                  <Radio value="Koti">Koti</Radio>
-                  <Radio value="Bhagirathipuram">Bhagirathipuram</Radio>
-                  <Radio value="New Tehri">New Tehri</Radio>
-                </VStack>
+                <HStack spacing={6} wrap="wrap">
+                  <Radio value="Koti" colorScheme="teal">
+                    Koti
+                  </Radio>
+                  <Radio value="Bhagirathipuram" colorScheme="teal">
+                    Bhagirathipuram
+                  </Radio>
+                  <Radio value="New Tehri" colorScheme="teal">
+                    New Tehri
+                  </Radio>
+                </HStack>
               </RadioGroup>
             </FormControl>
           )}
 
           {employee_location === "Koteshwar" && (
             <FormControl isRequired>
-              <FormLabel>Select Sub-Location</FormLabel>
+              <FormLabel fontWeight="bold">Select Sub-Location</FormLabel>
               <RadioGroup
                 value={employee_sublocation}
                 onChange={(value) => setEmployee_sublocation(value)}
               >
-                <VStack align="start">
-                  <Radio value="Power House">Power House</Radio>
-                  <Radio value="Admin Block">Admin Block</Radio>
-                  <Radio value="Water Sports Academy">Water Sports Academy</Radio>
-                </VStack>
+                <HStack spacing={6} wrap="wrap">
+                  <Radio value="Power House" colorScheme="teal">
+                    Power House
+                  </Radio>
+                  <Radio value="Admin Block" colorScheme="teal">
+                    Admin Block
+                  </Radio>
+                  <Radio value="Water Sports Academy" colorScheme="teal">
+                    Water Sports Academy
+                  </Radio>
+                </HStack>
               </RadioGroup>
             </FormControl>
           )}
 
+          {/* Asset */}
           <FormControl isRequired>
-            <FormLabel>Asset</FormLabel>
+            <FormLabel fontWeight="bold">Asset</FormLabel>
             <Select
               value={complaint_asset}
               onChange={(e) => setComplaint_asset(e.target.value)}
               placeholder="Select asset"
+              focusBorderColor="teal.500"
             >
               <option value="THDC Desktop">THDC Desktop</option>
               <option value="THDC UPS">THDC UPS</option>
@@ -144,45 +200,56 @@ const AdminRegisterComplaint = () => {
 
             {complaint_asset === "Other" && (
               <Input
-                mt={2}
+                mt={3}
                 placeholder="Enter custom asset"
                 value={customAsset}
                 onChange={(e) => setCustomAsset(e.target.value)}
+                focusBorderColor="teal.500"
               />
             )}
           </FormControl>
 
+          {/* Phone */}
           <FormControl isRequired>
-            <FormLabel>Mobile Number</FormLabel>
+            <FormLabel fontWeight="bold">Mobile Number</FormLabel>
             <Input
               value={employee_phoneNo}
-              onChange={(e) => setEmployee_phoneNo(e.target.value.replace(/\D/g, ''))}
+              onChange={(e) =>
+                setEmployee_phoneNo(e.target.value.replace(/\D/g, ""))
+              }
               type="tel"
               placeholder="Enter your mobile number"
               maxLength="10"
               minLength="10"
+              focusBorderColor="teal.500"
             />
           </FormControl>
 
+          {/* Complaint Details */}
           <FormControl isRequired>
-            <FormLabel>Complaint Details</FormLabel>
+            <FormLabel fontWeight="bold">Complaint Details</FormLabel>
             <Textarea
               value={complain_details}
               onChange={(e) => setComplain_details(e.target.value)}
               placeholder="Describe your complaint in detail"
-              minH="100px"
+              minH="120px"
+              focusBorderColor="teal.500"
             />
           </FormControl>
 
+          <Divider />
+
+          {/* Submit */}
           <Button
             isLoading={isComplaintLoading}
             type="submit"
             colorScheme="teal"
             size="lg"
             width="full"
-            mt={3}
+            mt={4}
+            borderRadius="full"
           >
-            Submit
+            Submit Complaint
           </Button>
         </VStack>
       </form>

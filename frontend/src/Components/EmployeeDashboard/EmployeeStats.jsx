@@ -3,10 +3,9 @@ import {
   Box,
   Text,
   Button,
-  HStack,
+  Flex,
   VStack,
-  useDisclosure,
-  useToast,         
+  useToast,
   Tooltip,
 } from '@chakra-ui/react';
 import { Bar } from 'react-chartjs-2';
@@ -15,157 +14,150 @@ import { EmployeeContext } from '../context/EmployeeContext';
 import { useDispatch, useSelector } from 'react-redux';
 import { logoutUser } from '../../Redux/Actions/AuthAction';
 import { LOGIN_RESET, LOGOUT_USER_RESET } from '../../Redux/ActionType';
+import { motion } from 'framer-motion';
+
+const MotionBox = motion(Box);
 
 const EmployeeStats = () => {
-  const { loading, user: lu, isLoggedIn, error } = useSelector((state) => state.loginUser || {});
-  const toast = useToast()
+  const { allMyComplaints } = useContext(EmployeeContext);
   const dispatch = useDispatch();
+  const toast = useToast();
 
-  function handleLogOut() {
-    dispatch(logoutUser());
-  }
-
-  const { loading : isLoggedOutUserLoading , isLoggedOut } = useSelector((state) => state.logOutUser);
+  const { user: lu } = useSelector((state) => state.loginUser || {});
+  const { loading: isLoggingOut, isLoggedOut } = useSelector((state) => state.logOutUser);
 
   useEffect(() => {
-    if(isLoggedOut){
-        toast({
-            title: 'User Logged Out Successfully!',
-            position: 'top',
-            status: 'success',
-            duration: 9000,
-            isClosable: true,
-          })
-        dispatch({type : LOGOUT_USER_RESET})
-        dispatch({ type: LOGIN_RESET });
+    if (isLoggedOut) {
+      toast({
+        title: 'User Logged Out Successfully!',
+        position: 'top',
+        status: 'success',
+        duration: 5000,
+        isClosable: true,
+      });
+      dispatch({ type: LOGOUT_USER_RESET });
+      dispatch({ type: LOGIN_RESET });
     }
-  }, [isLoggedOut]);
+  }, [isLoggedOut, dispatch, toast]);
+
+  const handleLogOut = () => dispatch(logoutUser());
 
   const today = moment().format('MMMM D, YYYY');
-  const userName = 'Admin'; // Replace with dynamic username if available
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const { allMyComplaints, setAllMyComplaints } = useContext(EmployeeContext);
 
-  const len1 = allMyComplaints.filter((com) => com.status === 'Opened').length;
-  const len2 = allMyComplaints.filter((com) => com.status === 'Processing').length;
-  const len3 = allMyComplaints.filter((com) => com.status === 'Closed').length;
-  const len4 = allMyComplaints.length;
+  const lenOpened = allMyComplaints.filter((c) => c.status === 'Opened').length;
+  const lenProcessing = allMyComplaints.filter((c) => c.status === 'Processing').length;
+  const lenClosed = allMyComplaints.filter((c) => c.status === 'Closed').length;
+  const total = allMyComplaints.length;
 
-  // Sample data for bar chart
   const barChartData = {
-    labels: ['Total Complaints', 'Total Closed', 'Total Active', 'Total Processing'],
+    labels: ['Total Complaints', 'Total Closed', 'Total Opened', 'Total Processing'],
     datasets: [
       {
         label: 'Count',
-        data: [len4, len3, len1, len2],
-        backgroundColor: ['#0088FE', '#FFBB28', '#FF8042', '#00C49F'],
+        data: [total, lenClosed, lenOpened, lenProcessing],
+        backgroundColor: ['#3182CE', '#38A169', '#DD6B20', '#D69E2E'],
         borderColor: '#ffffff',
         borderWidth: 1,
       },
     ],
   };
 
-  return (
-    <Box p={5} fontFamily="'Nunito', sans-serif" bg="gray.50" borderRadius="md" boxShadow="md" flex="1" h="100vh" overflowY="auto">
-      {/* Top Section */}
-      <HStack spacing={4} mb={6} p={4} bg="teal.500" color="white" borderRadius="md" alignItems="center" h="130px">
-        <HStack spacing={6} flex="1" alignItems="flex-start">
-          <Box>
-            <Text fontSize="2xl" fontWeight="bold" fontFamily="'Nunito', sans-serif">WElCOME {lu && lu ? lu.employee_name : ""}</Text>
-            <Button isLoading={isLoggedOutUserLoading} colorScheme="red" onClick={handleLogOut} mt={2}>
-              Logout
-            </Button>
-          </Box>
-          <Box flex="1" mt='40px' textAlign="right">
-            <Text fontSize='30px' mt='6px' fontFamily="'Nunito', sans-serif">
-              {today}
-            </Text>
-          </Box>
-        </HStack>
-      </HStack>
-      
-      {/* Main Content */}
-      <VStack spacing={6} align="stretch">
-        <HStack spacing={6} mb={6} align="stretch">
-          {/* Complaint Counts Boxes */}
-          <VStack spacing={6} flex="1" align="stretch">
-            <HStack spacing={6} mb={6} align="stretch">
-              <Tooltip label="Total Complaints" placement="top" hasArrow>
-                <Box
-                  p={6}
-                  bg="blue.500"
-                  color="white"
-                  borderRadius="md"
-                  boxShadow="md"
-                  textAlign="center"
-                  flex="1"
-                  _hover={{ transform: 'scale(1.05)', boxShadow: 'lg' }}
-                  transition="all 0.3s"
-                >
-                  <Text fontSize="xl" fontWeight="bold" fontFamily="'Nunito', sans-serif">All Complaints</Text>
-                  <Text fontSize="3xl" fontWeight="bold" fontFamily="'Nunito', sans-serif">{len4}</Text>
-                </Box>
-              </Tooltip>
-              <Tooltip label="Total Closed" placement="top" hasArrow>
-                <Box
-                  p={6}
-                  bg="green.500"
-                  color="white"
-                  borderRadius="md"
-                  boxShadow="md"
-                  textAlign="center"
-                  flex="1"
-                  _hover={{ transform: 'scale(1.05)', boxShadow: 'lg' }}
-                  transition="all 0.3s"
-                >
-                  <Text fontSize="xl" fontWeight="bold" fontFamily="'Nunito', sans-serif">Resolved</Text>
-                  <Text fontSize="3xl" fontWeight="bold" fontFamily="'Nunito', sans-serif">{len3}</Text>
-                </Box>
-              </Tooltip>
-            </HStack>
-            <HStack spacing={6} align="stretch">
-              <Tooltip label="Total Opened" placement="top" hasArrow>
-                <Box
-                  p={6}
-                  bg="orange.500"
-                  color="white"
-                  borderRadius="md"
-                  boxShadow="md"
-                  textAlign="center"
-                  flex="1"
-                  _hover={{ transform: 'scale(1.05)', boxShadow: 'lg' }}
-                  transition="all 0.3s"
-                >
-                  <Text fontSize="xl" fontWeight="bold" fontFamily="'Nunito', sans-serif">Total Opened</Text>
-                  <Text fontSize="3xl" fontWeight="bold" fontFamily="'Nunito', sans-serif">{len1}</Text>
-                </Box>
-              </Tooltip>
-              <Tooltip label="Total Processing" placement="top" hasArrow>
-                <Box
-                  p={6}
-                  bg="yellow.500"
-                  color="white"
-                  borderRadius="md"
-                  boxShadow="md"
-                  textAlign="center"
-                  flex="1"
-                  _hover={{ transform: 'scale(1.05)', boxShadow: 'lg' }}
-                  transition="all 0.3s"
-                >
-                  <Text fontSize="xl" fontWeight="bold" fontFamily="'Nunito', sans-serif">Total Processing</Text>
-                  <Text fontSize="3xl" fontWeight="bold" fontFamily="'Nunito', sans-serif">{len2}</Text>
-                </Box>
-              </Tooltip>
-            </HStack>
-          </VStack>
+  // Animation variants
+  const cardVariant = {
+    hidden: { opacity: 0, y: 20 },
+    visible: (i) => ({ opacity: 1, y: 0, transition: { delay: i * 0.2 } }),
+  };
 
-          {/* Bar Chart */}
-          <Box flex="2" overflowY="auto">
-            <Text fontSize="lg" mb={2} textAlign="center" fontFamily="'Nunito', sans-serif">Complaint Counts</Text>
-            <Bar data={barChartData} options={{ responsive: true, plugins: { legend: { position: 'bottom' } } }} height={250} />
-          </Box>
-        </HStack>
-      </VStack>
+  const chartVariant = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { delay: 0.8, duration: 0.8 } },
+  };
+
+  return (
+    <Box p={6} fontFamily="'Nunito', sans-serif" bg="gray.50" minH="100vh">
+      {/* Header */}
+      <Flex
+        justify="space-between"
+        align="center"
+        p={4}
+        bg="teal.500"
+        color="white"
+        borderRadius="lg"
+        mb={6}
+      >
+        <Box>
+          <Text fontSize="2xl" fontWeight="bold">
+            Hello, {lu?.employee_name || 'User'}
+          </Text>
+          <Button
+            isLoading={isLoggingOut}
+            colorScheme="red"
+            onClick={handleLogOut}
+            mt={2}
+            size="sm"
+          >
+            Logout
+          </Button>
+        </Box>
+        <Text fontSize="xl" fontWeight="semibold">{today}</Text>
+      </Flex>
+
+      {/* Stats + Chart */}
+      <Flex direction={{ base: 'column', lg: 'row' }} gap={6}>
+        {/* Complaint Summary Cards */}
+        <VStack spacing={6} flex="1" align="stretch">
+          {[ 
+            { label: 'Total Complaints', value: total, bg: 'blue.500', tooltip: 'All Complaints recorded' },
+            { label: 'Total Closed', value: lenClosed, bg: 'green.500', tooltip: 'Complaints resolved' },
+            { label: 'Total Opened', value: lenOpened, bg: 'orange.500', tooltip: 'Still open complaints' },
+            { label: 'Total Processing', value: lenProcessing, bg: 'yellow.500', tooltip: 'Currently being processed' },
+          ].map((card, idx) => (
+            <Tooltip key={card.label} label={card.tooltip} placement="top">
+              <MotionBox
+                custom={idx}
+                initial="hidden"
+                animate="visible"
+                variants={cardVariant}
+                p={6}
+                bg={card.bg}
+                color="white"
+                borderRadius="lg"
+                boxShadow="md"
+                textAlign="center"
+                _hover={{ transform: 'scale(1.05)', boxShadow: 'xl' }}
+                transition="all 0.3s"
+              >
+                <Text fontSize="xl" fontWeight="bold">{card.label}</Text>
+                <Text fontSize="3xl" fontWeight="bold">{card.value}</Text>
+              </MotionBox>
+            </Tooltip>
+          ))}
+        </VStack>
+
+        {/* Bar Chart */}
+        <MotionBox
+          flex="2"
+          bg="white"
+          p={4}
+          borderRadius="lg"
+          boxShadow="md"
+          initial="hidden"
+          animate="visible"
+          variants={chartVariant}
+        >
+          <Text fontSize="lg" mb={2} textAlign="center" fontWeight="semibold">
+            Complaint Counts
+          </Text>
+          <Bar
+            data={barChartData}
+            options={{
+              responsive: true,
+              plugins: { legend: { position: 'bottom' } },
+            }}
+            height={250}
+          />
+        </MotionBox>
+      </Flex>
     </Box>
   );
 };

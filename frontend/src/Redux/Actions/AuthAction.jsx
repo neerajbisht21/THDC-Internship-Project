@@ -49,7 +49,7 @@ export const loginUser = (employee_id, employee_password) => async (dispatch) =>
   }
 };
 
-// Register Employee
+// Register Employee with is_Employee_Worker logic
 export const RegisterAsEmployee = (
   employee_id,
   employee_name,
@@ -57,7 +57,9 @@ export const RegisterAsEmployee = (
   employee_department,
   employee_location,
   employee_password,
-  employee_email
+  employee_email,
+  role,
+  isWorker
 ) => async (dispatch) => {
   try {
     dispatch({ type: REGISTER_AS_EMPLOYEE_REQUEST });
@@ -70,7 +72,9 @@ export const RegisterAsEmployee = (
       employee_department,
       employee_location,
       employee_password,
-      employee_email
+      employee_email,
+      employee_role: role,
+      is_Employee_Worker: isWorker
     }, config);
 
     dispatch({ type: REGISTER_AS_EMPLOYEE_SUCCESS, payload: data.user });

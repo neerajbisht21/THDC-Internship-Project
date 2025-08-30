@@ -1,114 +1,69 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Box, Flex, Avatar, Text, VStack, Link, Icon, Divider } from '@chakra-ui/react';
 import { FaFolderOpen, FaHourglassHalf, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
-import { Link as RouterLink , useNavigate } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 const AdminSidebar = () => {
-  const navigate = useNavigate();
-  const { loading, user: loginUser, isLoggedIn:isLoggedInAdmin, error } = useSelector((state) => state.login || {});
-  // Remove automatic redirect - ProtectedRoute handles this now
-  // useEffect(()=>{
-  //   if(!isLoggedInAdmin){
-  //     navigate('/')
-  //   }
-  // },[isLoggedInAdmin])
+  const { user: loginUser } = useSelector((state) => state.login || {});
+
+  const navItems = [
+    { to: "/admin", label: "Back To Home", icon: FaFolderOpen },
+    { to: "/admin/register-complaint", label: "Register a Complaint", icon: FaFolderOpen },
+    { to: "/admin/status/new-complaints", label: "New Complaints", icon: FaHourglassHalf },
+    { to: "/admin/status/open-complaints", label: "Pending Complaints", icon: FaCheckCircle },
+    { to: "/admin/status/closed-complaints", label: "Closed Complaints", icon: FaTimesCircle },
+    { to: "/admin/filterComplaints", label: "Filter Complaints", icon: FaHourglassHalf },
+  ];
 
   return (
     <Box
-      w="300px"
+      w="280px"
       p={5}
-      bg="gray.100"
+      bg="gray.900"
+      color="white"
       h="100vh"
-      boxShadow="md"
+      boxShadow="xl"
       fontFamily="'Nunito', sans-serif"
     >
       <Flex align="center" mb={6} direction="column">
-        <Avatar name={loginUser && loginUser ? loginUser.employee_name : ""} src="/assets/admin-profile.png" size="xl" mb={4} />
-        <Text fontSize="lg" fontWeight="bold">{loginUser && loginUser ? loginUser.employee_name : ""}</Text>
+        <Avatar
+          name={loginUser ? loginUser.employee_name : ""}
+          src="/assets/admin-profile.png"
+          size="xl"
+          mb={4}
+        />
+        <Text fontSize="lg" fontWeight="bold" color="gray.100">
+          {loginUser ? loginUser.employee_name : ""}
+        </Text>
       </Flex>
-      <Divider borderColor="gray.300" mb={4} />
-      <VStack align="start" spacing={4}>
-        
-      <Link
-          as={RouterLink}
-          to="/admin"
-          display="flex"
-          alignItems="center"
-          w="100%"
-          p={2}
-          borderRadius="md"
-          _hover={{ bg: 'gray.200' }}
-        >
-          <Icon as={FaFolderOpen} mr={3} />
-          Back To Home
-        </Link>
 
-        <Link
-          as={RouterLink}
-          to="/admin/register-complaint"
-          display="flex"
-          alignItems="center"
-          w="100%"
-          p={2}
-          borderRadius="md"
-          _hover={{ bg: 'gray.200' }}
-        >
-          <Icon as={FaFolderOpen} mr={3} />
-          Register a Complaint
-        </Link>
-        <Link
-          as={RouterLink}
-          to="/admin/status/new-complaints"
-          display="flex"
-          alignItems="center"
-          w="100%"
-          p={2}
-          borderRadius="md"
-          _hover={{ bg: 'gray.200' }}
-        >
-          <Icon as={FaHourglassHalf} mr={3} />
-          New Complaints
-        </Link>
-        <Link
-          as={RouterLink}
-          to="/admin/status/open-complaints"
-          display="flex"
-          alignItems="center"
-          w="100%"
-          p={2}
-          borderRadius="md"
-          _hover={{ bg: 'gray.200' }}
-        >
-          <Icon as={FaCheckCircle} mr={3} />
-          Pending Complaints
-        </Link>
-        <Link
-          as={RouterLink}
-          to="/admin/status/closed-complaints"
-          display="flex"
-          alignItems="center"
-          w="100%"
-          p={2}
-          borderRadius="md"
-          _hover={{ bg: 'gray.200' }}
-        >
-          <Icon as={FaTimesCircle} mr={3} />
-          Closed Complaints
-        </Link>
-        <Link
-          as={RouterLink}
-          to="/admin/filterComplaints"
-          display="flex"
-          alignItems="center"
-          w="100%"
-          p={2}
-          borderRadius="md"
-          _hover={{ bg: 'gray.200' }}
-        >
-          <Icon as={FaHourglassHalf} mr={3} />
-          Filter Complaints
-        </Link>
+      <Divider borderColor="gray.600" mb={4} />
+
+      <VStack align="start" spacing={2} w="100%">
+        {navItems.map((item, index) => (
+          <Link
+            key={index}
+            as={RouterLink}
+            to={item.to}
+            display="flex"
+            alignItems="center"
+            w="100%"
+            p={3}
+            borderRadius="md"
+            transition="all 0.2s"
+            _hover={{
+              bg: "gray.700",
+              transform: "translateX(6px) scale(1.02)",
+              color: "teal.300",
+              boxShadow: "md",
+              borderLeft: "4px solid teal",
+            }}
+          >
+            <Icon as={item.icon} mr={3} boxSize={5} />
+            <Text fontWeight="medium">{item.label}</Text>
+          </Link>
+        ))}
       </VStack>
     </Box>
   );

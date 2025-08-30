@@ -1,7 +1,19 @@
 import React, { useContext } from 'react';
 import {
-  Box, Table, Thead, Tbody, Tr, Th, Td, TableContainer,
-  Text, Tag, Button
+  Box,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  TableContainer,
+  Text,
+  Tag,
+  Button,
+  Center,
+  Spinner,
+  Flex,
 } from '@chakra-ui/react';
 import { EmployeeContext } from '../context/EmployeeContext';
 import moment from 'moment';
@@ -9,7 +21,7 @@ import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 
 const AllComplaints = () => {
-  const { allMyComplaints } = useContext(EmployeeContext);
+  const { allMyComplaints, loading } = useContext(EmployeeContext);
 
   const formatDate = (dateString) =>
     dateString ? moment(dateString).format('MMMM D, YYYY h:mm A') : '';
@@ -48,48 +60,75 @@ const AllComplaints = () => {
     saveAs(data, 'All_Complaints.xlsx');
   };
 
+  const ComplaintRow = ({ complaint }) => (
+    <Tr _hover={{ bg: 'gray.50' }} transition="background 0.2s">
+      <Td>{complaint.complaint_id}</Td>
+      <Td>{complaint.complaint_asset}</Td>
+      <Td maxW="250px" whiteSpace="normal">{complaint.complain_details}</Td>
+      <Td>{complaint.employee_location}</Td>
+      <Td>{complaint.employee_sublocation}</Td>
+      <Td>{formatDate(complaint.created_date)}</Td>
+      <Td>
+        <Tag colorScheme={getStatusColor(complaint.status)} variant="solid">
+          {complaint.status}
+        </Tag>
+      </Td>
+    </Tr>
+  );
+
   return (
-    <Box p={5} fontFamily="'Nunito', sans-serif" maxW="100vw" bg="gray.50" minH="100vh">
-      <Button colorScheme="teal" mb={4} onClick={handleExportExcel}>
-        Export as Excel
-      </Button>
-      <Text fontSize="3xl" textAlign="center" fontWeight="bold" mb={4}>All Complaints</Text>
-      
-      {/* Scrollable container */}
-      <Box maxH="70vh" overflowY="auto" px={2}>
-        <TableContainer bg="white" borderRadius="md" boxShadow="md" w="100%">
-          <Table variant="simple">
-            <Thead bg="gray.100" position="sticky" top="0" zIndex="docked">
-              <Tr>
-                <Th>Complaint Id</Th>
-                <Th>Assets Type</Th>
-                <Th>Complaint Text</Th>
-                <Th>Location</Th>
-                <Th>Sublocation</Th>
-                <Th>Created Date</Th>
-                <Th>Status</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {allMyComplaints?.map((complaint) => (
-                <Tr key={complaint.complaint_id}>
-                  <Td>{complaint.complaint_id}</Td>
-                  <Td>{complaint.complaint_asset}</Td>
-                  <Td>{complaint.complain_details}</Td>
-                  <Td>{complaint.employee_location}</Td>
-                  <Td>{complaint.employee_sublocation}</Td>
-                  <Td>{formatDate(complaint.created_date)}</Td>
-                  <Td>
-                    <Tag colorScheme={getStatusColor(complaint.status)}>
-                      {complaint.status}
-                    </Tag>
-                  </Td>
+    <Box p={6} fontFamily="'Nunito', sans-serif" bg="gray.50" minH="100vh">
+      {/* Header */}
+      <Flex mb={4} align="center" justify="space-between">
+        <Center flex="1">
+          <Text fontSize="3xl" fontWeight="bold" color="teal.600">
+            All Complaints
+          </Text>
+        </Center>
+        <Button
+          colorScheme="teal"
+          size="md"
+          onClick={handleExportExcel}
+          _hover={{ transform: 'scale(1.05)', boxShadow: 'md' }}
+          transition="all 0.2s"
+        >
+          Export as Excel
+        </Button>
+      </Flex>
+
+      {/* Table */}
+      {loading ? (
+        <Center mt={10}>
+          <Spinner size="xl" color="teal.500" />
+        </Center>
+      ) : allMyComplaints && allMyComplaints.length > 0 ? (
+        <Box maxH="70vh" overflowY="auto" px={2}>
+          <TableContainer bg="white" borderRadius="md" boxShadow="md" w="100%">
+            <Table variant="striped" colorScheme="gray" size="sm">
+              <Thead bg="teal.500">
+                <Tr>
+                  <Th color="white">Complaint Id</Th>
+                  <Th color="white">Assets Type</Th>
+                  <Th color="white">Complaint Text</Th>
+                  <Th color="white">Location</Th>
+                  <Th color="white">Sublocation</Th>
+                  <Th color="white">Created Date</Th>
+                  <Th color="white">Status</Th>
                 </Tr>
-              ))}
-            </Tbody>
-          </Table>
-        </TableContainer>
-      </Box>
+              </Thead>
+              <Tbody>
+                {allMyComplaints.map(c => (
+                  <ComplaintRow key={c.complaint_id} complaint={c} />
+                ))}
+              </Tbody>
+            </Table>
+          </TableContainer>
+        </Box>
+      ) : (
+        <Center mt={10}>
+          <Text fontSize="xl" color="gray.500">No complaints found!</Text>
+        </Center>
+      )}
     </Box>
   );
 };

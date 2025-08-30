@@ -1,25 +1,38 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from "react";
 import {
-  Box, Table, Heading, Thead, Tbody, Tr, Th, Td, TableContainer, Tag, Button
-} from '@chakra-ui/react';
-import AdminComplaintDetailModal from './AdminUpdateDetailModal';
-import { AdminContext } from '../context/AdminContext';
-import moment from 'moment';
+  Box,
+  Table,
+  Thead,
+  Heading,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  TableContainer,
+  Tag,
+  Button,
+  Tooltip,
+  Spinner,
+} from "@chakra-ui/react";
+import AdminComplaintDetailModal from "./AdminUpdateDetailModal";
+import { AdminContext } from "../context/AdminContext";
+import moment from "moment";
+import axios from "axios";
 
 const AdminPendingComplaints = () => {
   const [currentComplaint, setCurrentComplaint] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const formatDate = (dateString) => {
-    return moment(dateString).format('MMMM D, YYYY h:mm A'); // e.g., July 22, 2024 7:19 AM
-  };
+  const { allEmployeeComplaints, setAllEmployeeComplaints } = useContext(AdminContext);
+
+  const formatDate = (dateString) =>
+    moment(dateString).format("MMMM D, YYYY h:mm A");
 
   const handleViewDetails = (complaint) => {
     setCurrentComplaint(complaint);
     setIsModalOpen(true);
   };
-
-  const { allEmployeeComplaints } = useContext(AdminContext);
 
   const handleAssign = (assignedTo) => {
     console.log(`Assigned to: ${assignedTo}`);
@@ -27,82 +40,137 @@ const AdminPendingComplaints = () => {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'Opened':
-        return 'green';
-      case 'Closed':
-        return 'red';
-      case 'Processing':
-        return 'yellow';
+      case "Opened":
+        return "green";
+      case "Processing":
+        return "yellow";
+      case "Closed":
+        return "red";
       default:
-        return 'gray';
+        return "gray";
     }
   };
+
+  // Fetch pending complaints from backend dynamically
+  useEffect(() => {
+    const fetchPendingComplaints = async () => {
+      try {
+        setLoading(true);
+        const { data } = await axios.get("/api/complaints/pending"); // backend route
+        setAllEmployeeComplaints(data.allComplaints); // save in context
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching pending complaints:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchPendingComplaints();
+  }, [setAllEmployeeComplaints]);
+
+  const pendingComplaints =
+    allEmployeeComplaints?.filter((com) => com.status === "Processing") || [];
 
   return (
     <>
       <Box
-        p={5}
+        p={6}
         fontFamily="'Nunito', sans-serif"
-        maxW="100vw"
-        overflowX="auto"
+        w="100%"
+        h="100%"
         bg="gray.50"
-        maxH="90vh"         // Added max height to restrict height
-        overflowY="auto"    // Added vertical scroll if content overflows
       >
-        <Heading as="h1" textAlign="center" mb={14} color="teal.500">
+        {/* Header */}
+        <Heading
+          as="h1"
+          textAlign="center"
+          mb={6}
+          color="teal.600"
+          fontSize="2xl"
+          fontWeight="bold"
+        >
           Pending Complaints
         </Heading>
-        <Box overflowX="auto">
+
+        {loading ? (
+          <Box textAlign="center" py={10}>
+            <Spinner size="xl" color="teal.500" />
+          </Box>
+        ) : (
           <TableContainer
             bg="white"
-            borderRadius="md"
+            borderRadius="lg"
             boxShadow="md"
-            maxW="100%"
+            overflowX="auto"
           >
-            <Table variant="simple" size="sm">
-              <Thead bg="gray.100">
+            <Table variant="striped" colorScheme="gray" size="sm">
+              <Thead bg="teal.500">
                 <Tr>
-                  <Th>Assets Type</Th>
-                  <Th>Location</Th>
-                  <Th>Sublocation</Th>
-                  <Th>Created Date</Th>
-                  <Th>Assigned To</Th>
-                  <Th>Status</Th>
-                  <Th>Actions</Th>
+                  <Th color="white">Complaint Id</Th>
+                  <Th color="white">Asset Type</Th>
+                  <Th color="white">Complaint Text</Th>
+                  <Th color="white">Location</Th>
+                  <Th color="white">Sublocation</Th>
+                  <Th color="white">Created Date</Th>
+                  <Th color="white">Status</Th>
+                  <Th color="white" textAlign="center">
+                    Actions
+                  </Th>
                 </Tr>
               </Thead>
               <Tbody>
-                {allEmployeeComplaints &&
-                  allEmployeeComplaints
-                    .filter((com) => com.status === 'Processing')
-                    .map((complaint) => (
-                      <Tr key={complaint.complaint_id}>
-                        <Td>{complaint.complaint_asset}</Td>
-                        <Td>{complaint.employee_location}</Td>
-                        <Td>{complaint.employee_sublocation}</Td>
-                        <Td>{formatDate(complaint.created_date)}</Td>
-                        <Td>{complaint.attended_by?.name || 'N/A'}</Td>
-                        <Td>
-                          <Tag colorScheme={getStatusColor(complaint.status)}>
-                            {complaint.status}
-                          </Tag>
-                        </Td>
-                        <Td>
+                {pendingComplaints.length > 0 ? (
+                  pendingComplaints.map((complaint) => (
+                    <Tr
+                      key={complaint.complaint_id}
+                      _hover={{ bg: "gray.100" }}
+                      transition="background 0.2s"
+                    >
+                      <Td>{complaint.complaint_id}</Td>
+                      <Td>{complaint.complaint_asset}</Td>
+                      <Td maxW="250px" whiteSpace="normal">
+                        {complaint.complain_details}
+                      </Td>
+                      <Td>{complaint.employee_location}</Td>
+                      <Td>{complaint.employee_sublocation}</Td>
+                      <Td>{formatDate(complaint.created_date)}</Td>
+                      <Td>
+                        <Tag
+                          colorScheme={getStatusColor(complaint.status)}
+                          variant="solid"
+                        >
+                          {complaint.status}
+                        </Tag>
+                      </Td>
+                      <Td textAlign="center">
+                        <Tooltip label="View Complaint Details" hasArrow>
                           <Button
                             onClick={() => handleViewDetails(complaint)}
-                            colorScheme="blue"
+                            colorScheme="teal"
                             size="sm"
+                            _hover={{ transform: "scale(1.05)" }}
+                            transition="all 0.2s"
                           >
                             View
                           </Button>
-                        </Td>
-                      </Tr>
-                    ))}
+                        </Tooltip>
+                      </Td>
+                    </Tr>
+                  ))
+                ) : (
+                  <Tr>
+                    <Td colSpan={8} textAlign="center">
+                      No pending complaints at the moment.
+                    </Td>
+                  </Tr>
+                )}
               </Tbody>
             </Table>
           </TableContainer>
-        </Box>
+        )}
       </Box>
+
+      {/* Modal */}
       {currentComplaint && (
         <AdminComplaintDetailModal
           isOpen={isModalOpen}

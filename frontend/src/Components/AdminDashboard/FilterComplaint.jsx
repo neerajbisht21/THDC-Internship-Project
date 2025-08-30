@@ -1,11 +1,7 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   Box,
-  Text,
-  HStack,
-  Button,
-  Select,
-  Input,
+  Heading,
   Table,
   Thead,
   Tbody,
@@ -13,56 +9,37 @@ import {
   Th,
   Td,
   TableContainer,
+  Input,
+  Select,
+  Button,
+  HStack,
   Tag,
-  useToast,
-  VStack,
-  FormControl,
-  FormLabel,
+  Tooltip,
 } from "@chakra-ui/react";
-import moment from "moment";
 import { AdminContext } from "../context/AdminContext";
-import { useDispatch, useSelector } from "react-redux";
 import AdminComplaintDetailModal from "./AdminUpdateDetailModal";
-import { filterComplaintAction } from "../../Redux/Actions/ComplaintAction";
+import moment from "moment";
 
 const FilterComplaint = () => {
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
-  const [filteredComplaints, setFilteredComplaints] = useState([]);
-  const toast = useToast();
-  const dispatch = useDispatch();
-
-  const handleFilter = () => {
-    const formatDate = (dateString) => {
-      const date = new Date(dateString);
-      const day = date.getDate().toString().padStart(2, "0");
-      const month = (date.getMonth() + 1).toString().padStart(2, "0");
-      const year = date.getFullYear().toString().substr(-2);
-      return `${day}/${month}/${year}`;
-    };
-
-    const formattedStartDate = formatDate(startDate);
-    const formattedEndDate = formatDate(endDate);
-
-    dispatch(
-      filterComplaintAction(formattedStartDate, formattedEndDate, statusFilter)
-    );
-  };
-  const handleAssign = (assignedTo) => {
-    console.log(`Assigned to: ${assignedTo}`);
-  };
-
+  const { allEmployeeComplaints } = useContext(AdminContext);
+  const [filterStatus, setFilterStatus] = useState("");
+  const [searchText, setSearchText] = useState("");
+  const [filterDate, setFilterDate] = useState("");
+  const [filterLocation, setFilterLocation] = useState("");
+  const [filterAsset, setFilterAsset] = useState("");
   const [currentComplaint, setCurrentComplaint] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const formatDate = (dateString) => {
-    return moment(dateString).format("MMMM D, YYYY h:mm A"); // Format as "July 22, 2024 7:19 AM"
-  };
+  const formatDate = (dateString) =>
+    moment(dateString).format("MMMM D, YYYY h:mm A");
 
   const handleViewDetails = (complaint) => {
     setCurrentComplaint(complaint);
     setIsModalOpen(true);
+  };
+
+  const handleAssign = (assignedTo) => {
+    console.log(`Assigned to: ${assignedTo}`);
   };
 
   const getStatusColor = (status) => {
@@ -78,173 +55,207 @@ const FilterComplaint = () => {
     }
   };
 
-  const {
-    complaints,
-    isFiltered,
-    loading: filterLoading,
-  } = useSelector((state) => state.filterComplaints);
+  const filteredComplaints = allEmployeeComplaints.filter((complaint) => {
+    const matchesStatus = filterStatus
+      ? complaint.status === filterStatus
+      : true;
+    const matchesSearch = searchText
+      ? complaint.complain_details
+          .toLowerCase()
+          .includes(searchText.toLowerCase())
+      : true;
+    const matchesDate = filterDate
+      ? moment(complaint.created_date).isSame(filterDate, "day")
+      : true;
+    const matchesLocation = filterLocation
+      ? complaint.employee_location
+          .toLowerCase()
+          .includes(filterLocation.toLowerCase())
+      : true;
+    const matchesAsset = filterAsset
+      ? complaint.complaint_asset
+          .toLowerCase()
+          .includes(filterAsset.toLowerCase())
+      : true;
 
-  useEffect(() => {
-    if (Array.isArray(complaints)) {
-      setFilteredComplaints([...complaints]);
-    } else {
-      setFilteredComplaints([]);
-    }
-  }, [complaints]);
+    return (
+      matchesStatus &&
+      matchesSearch &&
+      matchesDate &&
+      matchesLocation &&
+      matchesAsset
+    );
+  });
 
   return (
-    <Box
-      p={5}
-      fontFamily="'Nunito', sans-serif"
-      bg="gray.50"
-      borderRadius="md"
-      boxShadow="md"
-      maxW="100vw"
-      overflow="hidden"
-    >
-      <VStack spacing={6} align="stretch">
-        <Text fontSize="2xl" fontWeight="bold" color="teal.500" mb={4}>
-          Filter Complaints
-        </Text>
-        <HStack spacing={4} mb={4} align="center">
-          <Box flex="1">
-            <FormControl>
-              <FormLabel fontSize="sm" mb={1}>
-                Start Date
-              </FormLabel>
-              <Input
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                bg="white"
-                borderColor="gray.300"
-                _hover={{ borderColor: "teal.500" }}
-                _focus={{
-                  borderColor: "teal.500",
-                  boxShadow: "0 0 0 1px teal.500",
-                }}
-              />
-            </FormControl>
-          </Box>
-          <Box flex="1">
-            <FormControl>
-              <FormLabel fontSize="sm" mb={1}>
-                End Date
-              </FormLabel>
-              <Input
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                bg="white"
-                borderColor="gray.300"
-                _hover={{ borderColor: "teal.500" }}
-                _focus={{
-                  borderColor: "teal.500",
-                  boxShadow: "0 0 0 1px teal.500",
-                }}
-              />
-            </FormControl>
-          </Box>
-          <Box flex="1">
-            <FormControl>
-              <FormLabel fontSize="sm" mb={1}>
-                Status
-              </FormLabel>
-              <Select
-                placeholder="Select status"
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                bg="white"
-                borderColor="gray.300"
-                _hover={{ borderColor: "teal.500" }}
-                _focus={{
-                  borderColor: "teal.500",
-                  boxShadow: "0 0 0 1px teal.500",
-                }}
-              >
-                <option value="Opened">Opened</option>
-                <option value="Processing">Processing</option>
-                <option value="Closed">Closed</option>
-              </Select>
-            </FormControl>
-          </Box>
-        </HStack>
-        <Button
-          isLoading={filterLoading}
-          mt={4}
-          colorScheme="teal"
-          onClick={handleFilter}
-          width="full"
+    <>
+      <Box
+        p={6}
+        fontFamily="'Nunito', sans-serif"
+        w="100%"
+        h="100%"
+        bg="gray.50"
+      >
+        <Heading
+          as="h1"
+          textAlign="center"
+          mb={6}
+          color="teal.600"
+          fontSize="2xl"
+          fontWeight="bold"
         >
-          Apply Filters
-        </Button>
+          Filter Complaints
+        </Heading>
 
-        <Box overflowX="auto">
-          <TableContainer
+        {/* Filter Controls */}
+        <HStack spacing={4} mb={6} justify="center" flexWrap="wrap">
+          <Select
+            placeholder="Filter by Status"
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+            w="200px"
             bg="white"
             borderRadius="md"
-            boxShadow="md"
-            maxW="100%"
+            boxShadow="sm"
           >
-            <Table variant="simple">
-              <Thead bg="gray.100">
-                <Tr>
-                  <Th>Complaint Id</Th>
-                  <Th>Assets Type</Th>
-                  <Th>Complaint Text</Th>
-                  <Th>Location</Th>
-                  <Th>Created Date</Th>
-                  <Th>Status</Th>
-                  <Th>Actions</Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                {Array.isArray(filteredComplaints) &&
-                filteredComplaints.length > 0 ? (
-                  filteredComplaints.map((complaint) => (
-                    <Tr key={complaint.complaint_id}>
-                      <Td>{complaint.complaint_id}</Td>
-                      <Td>{complaint.complaint_asset}</Td>
-                      <Td>{complaint.complain_details}</Td>
-                      <Td>{complaint.employee_location}</Td>
-                      <Td>{formatDate(complaint.created_date)}</Td>
-                      <Td>
-                        <Tag colorScheme={getStatusColor(complaint.status)}>
-                          {complaint.status}
-                        </Tag>
-                      </Td>
-                      <Td>
+            <option value="Opened">Opened</option>
+            <option value="Processing">Processing</option>
+            <option value="Closed">Closed</option>
+          </Select>
+
+          <Input
+            type="date"
+            placeholder="Filter by Date"
+            value={filterDate}
+            onChange={(e) => setFilterDate(e.target.value)}
+            w="180px"
+            bg="white"
+            borderRadius="md"
+            boxShadow="sm"
+          />
+
+          <Input
+            placeholder="Filter by Location"
+            value={filterLocation}
+            onChange={(e) => setFilterLocation(e.target.value)}
+            w="200px"
+            bg="white"
+            borderRadius="md"
+            boxShadow="sm"
+          />
+
+          <Input
+            placeholder="Filter by Asset Type"
+            value={filterAsset}
+            onChange={(e) => setFilterAsset(e.target.value)}
+            w="200px"
+            bg="white"
+            borderRadius="md"
+            boxShadow="sm"
+          />
+
+          <Input
+            placeholder="Search by complaint text..."
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            w="300px"
+            bg="white"
+            borderRadius="md"
+            boxShadow="sm"
+          />
+
+          <Button
+            onClick={() => {
+              setFilterStatus("");
+              setSearchText("");
+              setFilterDate("");
+              setFilterLocation("");
+              setFilterAsset("");
+            }}
+            colorScheme="teal"
+          >
+            Reset
+          </Button>
+        </HStack>
+
+        {/* Table */}
+        <TableContainer
+          bg="white"
+          borderRadius="lg"
+          boxShadow="md"
+          overflowX="auto"
+        >
+          <Table variant="striped" colorScheme="gray" size="sm">
+            <Thead bg="teal.500">
+              <Tr>
+                <Th color="white" maxW="100px">Complaint Id</Th>
+                <Th color="white" maxW="120px">Asset Type</Th>
+                <Th color="white" maxW="250px">Complaint Text</Th>
+                <Th color="white" maxW="150px">Location</Th>
+                <Th color="white" maxW="150px">Sublocation</Th>
+                <Th color="white" maxW="150px">Created Date</Th>
+                <Th color="white" maxW="100px">Status</Th>
+                <Th color="white" textAlign="center" maxW="100px">
+                  Actions
+                </Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {filteredComplaints.length > 0 ? (
+                filteredComplaints.map((complaint) => (
+                  <Tr
+                    key={complaint.complaint_id}
+                    _hover={{ bg: "gray.100" }}
+                    transition="background 0.2s"
+                  >
+                    <Td maxW="100px" isTruncated>{complaint.complaint_id}</Td>
+                    <Td maxW="120px" isTruncated>{complaint.complaint_asset}</Td>
+                    <Td maxW="250px" whiteSpace="normal">{complaint.complain_details}</Td>
+                    <Td maxW="150px" isTruncated>{complaint.employee_location}</Td>
+                    <Td maxW="150px" isTruncated>{complaint.employee_sublocation}</Td>
+                    <Td maxW="150px" isTruncated>{formatDate(complaint.created_date)}</Td>
+                    <Td maxW="100px" isTruncated>
+                      <Tag colorScheme={getStatusColor(complaint.status)} variant="solid">
+                        {complaint.status}
+                      </Tag>
+                    </Td>
+                    <Td textAlign="center" maxW="100px">
+                      <Tooltip label="View Complaint Details" hasArrow>
                         <Button
                           onClick={() => handleViewDetails(complaint)}
-                          colorScheme="blue"
+                          colorScheme="teal"
                           size="sm"
+                          _hover={{ transform: "scale(1.05)" }}
+                          transition="all 0.2s"
                         >
                           View
                         </Button>
-                      </Td>
-                    </Tr>
-                  ))
-                ) : (
-                  <Tr>
-                    <Td colSpan="7" textAlign="center">
-                      No complaints match the above filters
+                      </Tooltip>
                     </Td>
                   </Tr>
-                )}
-              </Tbody>
-            </Table>
-          </TableContainer>
-        </Box>
-        {currentComplaint && (
-          <AdminComplaintDetailModal
-            isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(false)}
-            complaintDetail={currentComplaint}
-            onAssign={handleAssign}
-          />
-        )}
-      </VStack>
-    </Box>
+                ))
+              ) : (
+                <Tr>
+                  <Td colSpan={8} textAlign="center" py={6} color="gray.500">
+                    No complaints match the filter.
+                  </Td>
+                </Tr>
+              )}
+            </Tbody>
+          </Table>
+        </TableContainer>
+      </Box>
+
+      {/* Modal */}
+      {currentComplaint && (
+        <AdminComplaintDetailModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          complaintDetail={currentComplaint}
+          onAssign={handleAssign}
+        />
+      )}
+    </>
   );
 };
 
