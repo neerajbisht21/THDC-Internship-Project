@@ -11,9 +11,14 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(cors({
-    origin: ["http://localhost:3000"],
-    methods: ["POST", "GET"],
+    origin: [
+        "http://localhost:3000", 
+        "https://thdc-internship-project-frontend.onrender.com"
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true
+}));
+
 }));
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
