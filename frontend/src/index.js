@@ -7,7 +7,10 @@ import { Provider } from 'react-redux';
 import { ChakraProvider } from '@chakra-ui/react'
 import { EmployeeComplaintsProvider } from './Components/context/EmployeeContext';
 import { AdminAllComplaintsProvider } from './Components/context/AdminContext';
+import axios from "axios";
 
+// ✅ Set global Axios base URL (affects all axios.get/post calls)
+axios.defaults.baseURL = "https://thdc-internship-project-backend.onrender.com";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -25,4 +28,3 @@ root.render(
   </React.StrictMode>
   </ChakraProvider>
 );
-
