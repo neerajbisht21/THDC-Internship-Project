@@ -1,5 +1,4 @@
 {
-  "homepage": "."
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
@@ -62,7 +61,7 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://localhost:5000",
+  "homepage": ".",
   "description": "This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).",
   "main": "index.js",
   "keywords": [],
