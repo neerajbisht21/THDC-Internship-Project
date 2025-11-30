@@ -18,8 +18,6 @@ app.use(cors({
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true
 }));
-
-}));
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 
